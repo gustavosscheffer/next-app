@@ -1,3 +1,81 @@
 {
-  "extends": "next/core-web-vitals"
+	"env": {
+		"browser": true,
+		"es2021": true,
+		"node": true
+	},
+	"extends": [
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "standard",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+	"parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+	"plugins": [
+		"react",
+    "@typescript-eslint",
+    "simple-import-sort",
+		"standard",
+    "prettier"
+	],
+	"rules": {
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+		"no-console": "off",
+		"no-unused-vars": "off",
+		"no-restricted-syntax": [
+			"error",
+			{
+				"selector": "CallExpression[callee.object.name='console'][callee.property.name!=/^(log|warn|error|info|trace)$/]",
+				"message": "Unexpected property on console object was called"
+			}
+		],
+		"@typescript-eslint/no-unused-vars": ["error", { "ignoreRestSiblings": true }],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
+    "react/prop-types": "off",
+    "indent": "off",
+    "space-before-function-paren": "off",
+    "comma-dangle": ["error", "always-multiline"],
+    "no-useless-constructor": "off",
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [["^\\u0000"], ["^react$","^@?\\w", "\\*\\.svg"], ["^src/*"], ["^[^.]"], ["^\\."]]
+      }
+    ],
+    "jsx-a11y/anchor-is-valid": [
+      "error",
+      {
+        "components": ["AppLink"],
+        "specialLink": ["hrefLeft", "hrefRight"],
+        "aspects": ["noHref", "invalidHref", "preferButton"]
+      }
+    ],
+    "camelcase": "off",
+    "import/no-unresolved": ["error", { "ignore": ["\\*\\.svg"] }],
+    "react/react-in-jsx-scope": "off"
+	},
+	"settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "paths": ["."]
+      }
+    }
+  }
 }
