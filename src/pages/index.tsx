@@ -1,27 +1,34 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { GetStaticProps } from 'next'
 
-export default function Home() {
-  const [state, setState] = useState([])
+type HomeProps = {
+  ufs: Uf[]
+}
+
+type Uf = {
+  nome: string
+  id: number
+  sigla: string
+}
+
+export default function Home({ ufs }: HomeProps) {
   const [uf, setUf] = useState('')
   const [cities, setCities] = useState([])
   const [city, setCity] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados`).then(res => {
-      const response = res.data
-      setState(response)
-    })
-  }, [])
-
-  useEffect(() => {
-    if (uf !== '') {
-      axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`).then(res => {
-        const response = res.data
-        setCities(response)
-      })
+    const fetchData = async () => {
+      const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
+      const cities = await res.json()
+      setCities(cities)
     }
-  }, [state, uf])
+    if (uf !== '') {
+      setLoading(true)
+      fetchData()
+      setLoading(false)
+    }
+  }, [uf])
 
   return (
     <div>
@@ -33,7 +40,7 @@ export default function Home() {
         onChange={event => setUf(event.target.value)}
       />
       <datalist id="states">
-        {state.map(uf => {
+        {ufs.map(uf => {
           return <option value={uf.sigla} key={uf.id} />
         })}
       </datalist>
@@ -43,13 +50,30 @@ export default function Home() {
         id="city"
         className="border-2 border-black"
         onChange={event => setCity(event.target.value)}
+        disabled={loading}
       />
       <datalist id="cities">
         {cities.map(city => {
           return <option value={city.nome} key={city.id} />
         })}
       </datalist>
-      {console.log(uf, city)}
+      {console.log(city)}
     </div>
   )
+}
+
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const res = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+  const ufs: Uf[] = await res.json()
+
+  if (!ufs) {
+    return {
+      notFound: true,
+    }
+  }
+
+  return {
+    props: { ufs },
+    revalidate: 10,
+  }
 }
